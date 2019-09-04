@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * 消费消息
+ *
  * @author wqlm
  * @date 2019/8/25 10:34
  */
@@ -21,22 +22,23 @@ import java.util.Map;
 public class ConsumerMessageListener {
     /**
      * 监听指定队列
-     * @RabbitListener 指定了 exchange 、key、Queue 后，如果 Rabbitmq 没有会去创建
+     *
      * @param message 消息体
      * @param headers 消息头
      * @param channel 通道
      * @return
+     * @RabbitListener 指定了 exchange 、key、Queue 后，如果 Rabbitmq 没有会去创建
      */
     @RabbitListener(bindings = @QueueBinding(
-            exchange = @Exchange("exchangeName"),
+            exchange = @Exchange(value = "exchangeName", type = "direct", durable = "true", autoDelete = "false", internal = "false"),
             key = "routingKeyValue",
-            value = @Queue("queryName")
+            value = @Queue(value = "queryName", durable = "true", exclusive = "false", autoDelete = "false")
     ))
-    public void listenerMessage(String message, @Headers Map<String,Object> headers, Channel channel)
+    public void listenerMessage(String message, @Headers Map<String, Object> headers, Channel channel)
             throws IOException {
         System.out.println(message);
         System.out.println(headers);
         //手动 ack
-        channel.basicAck((Long)headers.get(AmqpHeaders.DELIVERY_TAG),false);
+        channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG), false);
     }
 }
